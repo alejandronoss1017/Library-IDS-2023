@@ -10,7 +10,7 @@
 
   <name>client-library</name>
   <!-- FIXME change it to the project's website -->
-  <url>https://github.com/alejandronoss1017/Library-ISD-2023</url>
+  <url>https://github.com/alejandronoss1017/Library-IDS-2023</url>
 
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
