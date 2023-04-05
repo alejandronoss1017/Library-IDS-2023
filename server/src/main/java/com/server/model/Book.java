@@ -18,6 +18,10 @@ public class Book implements Serializable {
     @Column(name = "book_amount")
     private Integer amount;
 
+    // Default constructor is required by JPA, so it must be declared
+    public Book() {
+    }
+
     public Book(String isbn, String name, Integer amount) {
         this.isbn = isbn;
         this.name = name;
