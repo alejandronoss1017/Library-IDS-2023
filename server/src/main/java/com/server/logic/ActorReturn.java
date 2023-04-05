@@ -7,33 +7,18 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
 public class ActorReturn implements Actor, Runnable {
+    private final ZContext context = new ZContext();
+    private final String topic = "Return";
 
     @Override
     public void execute() {
-        String topic = "Return", port = "5115";
+        ZMQ.Socket subscriberSocket = context.createSocket(SocketType.SUB);
+        subscriberSocket.connect("tcp://localhost:5556");
+        subscriberSocket.subscribe(topic.getBytes(ZMQ.CHARSET));
 
-        try (ZContext context = new ZContext()) {
-            ZMQ.Socket subscriber = context.createSocket(SocketType.SUB);
-
-            subscriber.connect("tcp://localhost:" + port);
-            subscriber.subscribe(topic.getBytes(ZMQ.CHARSET));
-
-            while (!Thread.currentThread().isInterrupted()) {
-                System.out.println("Thread " + topic + " is listening...");
-
-                String returnTopic = subscriber.recvStr(0);
-
-                String message = new String(subscriber.recv(0), ZMQ.CHARSET);
-
-                /* Codigo */
-                System.out.println("wdwdwd");
-            }
-
-            context.destroy();
-            subscriber.close();
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage() + " The Actor:" + topic + " can't be executed.");
+        while (!Thread.currentThread().isInterrupted()) {
+            String message = subscriberSocket.recvStr();
+            System.out.println("Received " + message + " from " + topic);
         }
     }
 
@@ -41,5 +26,13 @@ public class ActorReturn implements Actor, Runnable {
     public void run() {
         execute();
         throw new UnsupportedOperationException("Unimplemented method 'run'");
+    }
+
+    public ZContext getContext() {
+        return context;
+    }
+
+    public String getTopic() {
+        return topic;
     }
 }
