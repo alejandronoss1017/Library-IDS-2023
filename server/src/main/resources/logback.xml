@@ -29,12 +29,12 @@
     <!-- Configura el logger para Hibernate -->
     <logger name="org.hibernate" level="warn" additivity="false">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="File" />
+        <appender-ref ref="FILE" />
     </logger>
 
     <!-- Define el nivel de log global para la aplicación -->
     <root level="warn">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="File" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>
