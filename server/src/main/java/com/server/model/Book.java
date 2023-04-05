@@ -1,22 +1,35 @@
 package com.server.model;
 
-public class Book {
-    private  String ISBN;
-    private String name;
-    private int amount;
+import java.io.Serializable;
 
-    public Book(String ISBN, String name, int amount) {
-        this.ISBN = ISBN;
+import javax.persistence.*;
+
+@Entity
+@Table(name = "book")
+public class Book implements Serializable {
+
+    @Id
+    @Column(name = "isbn_book")
+    private String isbn;
+
+    @Column(name = "book_name")
+    private String name;
+
+    @Column(name = "book_amount")
+    private Integer amount;
+
+    public Book(String isbn, String name, Integer amount) {
+        this.isbn = isbn;
         this.name = name;
         this.amount = amount;
     }
 
-    public String getISBN() {
-        return ISBN;
+    public String getIsbn() {
+        return isbn;
     }
 
-    public void setISBN(String ISBN) {
-        this.ISBN = ISBN;
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public String getName() {
@@ -27,11 +40,12 @@ public class Book {
         this.name = name;
     }
 
-    public int getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
+
 }
