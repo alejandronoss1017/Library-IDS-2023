@@ -1,47 +1,32 @@
 package com.server;
 
-import org.zeromq.SocketType;
-import org.zeromq.ZMQ;
-
-import com.server.logic.InitActors;
-
-import org.zeromq.ZContext;
+import com.server.logic.ActorRenewal;
+import com.server.logic.ActorReturn;
+import com.server.model.LoadManager;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        try (ZContext context = new ZContext()) {
+        
+        System.out.println("Initializing server...");
 
+        LoadManager loadManager = new LoadManager();
 
-            // Socket to talk to clients
-            ZMQ.Socket socket = context.createSocket(SocketType.REP);
-            socket.bind("tcp://*:5555");
+        System.out.println("Server running on port 5555");
 
-            InitActors.setUpActors();
-            
-            while (!Thread.currentThread().isInterrupted()) {
-                byte[] reply = socket.recv(0);
+        Thread loadManagerThread = new Thread(loadManager);
 
-                System.out.println(
-                        "Received " + ": [" + new String(reply, ZMQ.CHARSET) + "]");
+        // Applicant is not implemented yet
+        // final Actor actorApplicant = new ActorApplicant();
+        final ActorRenewal actorRenewal = new ActorRenewal();
+        final ActorReturn actorReturn = new ActorReturn();
 
-                try (ZContext publisherContext = new ZContext()) {
-                    ZMQ.Socket publisher = publisherContext.createSocket(SocketType.PUB);
-                    publisher.bind("tcp://*:5115");
-                    if (new String(reply, ZMQ.CHARSET).equals("1")) {
-                        publisher.sendMore("Renewal");
-                        publisher.send(new String(reply, ZMQ.CHARSET).getBytes(ZMQ.CHARSET), 0);
-                    } else {
-                        publisher.sendMore("Return");
-                        publisher.send(new String(reply, ZMQ.CHARSET).getBytes(ZMQ.CHARSET), 0);
-                    }
-                }
+        // Thread actorApplicantThread = new Thread(actorApplicant);
+        Thread actorRenewalThread = new Thread(actorRenewal);
+        Thread actorReturnThread = new Thread(actorReturn);
 
-                /* Code to execute */
-                Thread.sleep(1000); // Do some 'work'
-
-                String response = new String(reply, ZMQ.CHARSET);
-                socket.send(response.getBytes(ZMQ.CHARSET), 0);
-            }
-        }
+        // Threads are started
+        loadManagerThread.start();
+        actorRenewalThread.start();
+        actorReturnThread.start();
     }
 }
