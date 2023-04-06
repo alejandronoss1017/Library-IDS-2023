@@ -9,7 +9,7 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level){INFO=green, WARN=yellow, ERROR=red} %cyan(%logger{15}) - %m%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>
+            <level>DEBUG</level>
             <onMatch>ACCEPT</onMatch>
         </filter>
     </appender>
@@ -20,10 +20,10 @@
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</pattern>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <!-- <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>WARN</level>
             <onMatch>ACCEPT</onMatch>
-        </filter>
+        </filter> -->
     </appender>
 
     <!-- Configura el logger para Hibernate -->
@@ -33,7 +33,7 @@
     </logger>
 
     <!-- Define el nivel de log global para la aplicación -->
-    <root level="warn">
+    <root level="debug">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
