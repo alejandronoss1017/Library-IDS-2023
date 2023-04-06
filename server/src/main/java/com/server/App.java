@@ -1,9 +1,7 @@
 package com.server;
 
 import com.server.logic.ActorManager;
-import com.server.logic.ActorRenewal;
-import com.server.logic.ActorReturn;
-import com.server.logic.Publisher;
+import com.server.logic.PublisherTest;
 import com.server.model.LoadManager;
 
 public class App {
@@ -18,7 +16,7 @@ public class App {
         Thread loadManagerThread = new Thread(loadManager);
 
         ActorManager.setUpActors();
-        Publisher publisher = new Publisher();
+        PublisherTest publisher = new PublisherTest();
         Thread publisherThread = new Thread(publisher);
         publisherThread.start();
 

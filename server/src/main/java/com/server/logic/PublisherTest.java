@@ -8,12 +8,12 @@ import org.zeromq.ZMsg;
 import static com.server.ServerInfo.*;
 
 /*
-    * This is the publisher class. It will send messages to the subscribers (actors -> renewal and return)
-    * It will send a confirmation message to the subscribers to confirm that they are ready to receive messages
-    * Is an example.
+ * This is the publisher class. It will send messages to the subscribers (actors -> renewal and return)
+ * It will send a confirmation message to the subscribers to confirm that they are ready to receive messages
+ * Is an example.
  */
 
-public class Publisher implements Runnable {
+public class PublisherTest implements Runnable {
 
     @Override
     public void run() {
@@ -23,6 +23,7 @@ public class Publisher implements Runnable {
 
             ZMsg msg = new ZMsg();
 
+            // Wait until the actors are ready to receive messages
             while (!ActorManager.isReady()) {
                 msg.add(CONFIRMATION);
                 msg.add(CONFIRMATION);
@@ -30,6 +31,7 @@ public class Publisher implements Runnable {
                 System.out.println("[PUBLISHER " + Thread.currentThread() + "]: Waiting for comprobant to be ready");
             }
 
+            // Publish 11 messages to the renewal and return topics
             for (int i = 0; i < 11; i++) {
                 String topic = i % 2 == 0 ? RENEWALTOPIC : RETURNTOPIC;
                 String message = "Number " + i;
