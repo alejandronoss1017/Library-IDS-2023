@@ -1,12 +1,14 @@
 package com.server;
 
+import com.server.logic.ActorManager;
 import com.server.logic.ActorRenewal;
 import com.server.logic.ActorReturn;
+import com.server.logic.Publisher;
 import com.server.model.LoadManager;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        
+
         System.out.println("Initializing server...");
 
         LoadManager loadManager = new LoadManager();
@@ -15,6 +17,17 @@ public class App {
 
         Thread loadManagerThread = new Thread(loadManager);
 
+        ActorManager.setUpActors();
+        Publisher publisher = new Publisher();
+        Thread publisherThread = new Thread(publisher);
+        publisherThread.start();
+
+        Thread.sleep(1000);
+
+        publisherThread.interrupt();
+        ActorManager.stopActors();
+
+        /*
         // Applicant is not implemented yet
         // final Actor actorApplicant = new ActorApplicant();
         final ActorRenewal actorRenewal = new ActorRenewal();
@@ -28,5 +41,6 @@ public class App {
         loadManagerThread.start();
         actorRenewalThread.start();
         actorReturnThread.start();
+         */
     }
 }

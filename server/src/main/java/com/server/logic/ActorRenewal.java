@@ -1,39 +1,47 @@
 package com.server.logic;
 
-import com.server.model.Actor;
-import org.zeromq.ZMQ;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 
-public class ActorRenewal implements Actor, Runnable {
-    private final ZContext context = new ZContext();
-    private final String topic = "Renewal";
+import static com.server.ServerInfo.*;
 
-    @Override
-    public void execute() {
-
-        ZMQ.Socket subscriberSocket = context.createSocket(SocketType.SUB);
-        subscriberSocket.connect("tcp://localhost:5556");
-        subscriberSocket.subscribe(topic.getBytes(ZMQ.CHARSET));
-
-        while (!Thread.currentThread().isInterrupted()) {
-            String message = subscriberSocket.recvStr();
-            System.out.println("Received " + message + " from " + topic);
-        }
-
-    }
+public class ActorRenewal implements Runnable {
+    private boolean status = false;
 
     @Override
     public void run() {
-        execute();
-        throw new UnsupportedOperationException("Unimplemented method 'run'");
+        try ( ZContext contextSUB = new ZContext()){
+            ZMQ.Socket subscriberSocket = contextSUB.createSocket(SocketType.SUB);
+
+            subscriberSocket.connect(ADDRESSPUBSUB);
+            subscriberSocket.subscribe(RENEWALTOPIC.getBytes(ZMQ.CHARSET));
+            subscriberSocket.subscribe(CONFIRMATION.getBytes(ZMQ.CHARSET));
+
+            while (!Thread.currentThread().isInterrupted()) {
+                subscriberSocket.recvStr();
+                if (!status) {
+                    if (subscriberSocket.recvStr().equals(CONFIRMATION)) {
+                        status = true;
+                        subscriberSocket.unsubscribe(CONFIRMATION.getBytes(ZMQ.CHARSET));
+                    }
+                } else {
+                    String message = subscriberSocket.recvStr();
+                    System.out.printf("[SUSCRIBER " + RENEWALTOPIC + " " + Thread.currentThread() + "] Received message '%s'%n", message);
+                }
+            }
+            contextSUB.destroy();
+        } catch (Exception e) {
+            if(e.getMessage().equals("Errno 4")){
+                System.out.println("[" + RENEWALTOPIC + " " + Thread.currentThread() + "]: Hilo interrumpido.");
+                status = false;
+            }
+            else
+                System.err.println("[" + RENEWALTOPIC + " " + Thread.currentThread() + "]: " + e.getMessage());
+        }
     }
 
-    public ZContext getContext() {
-        return context;
-    }
-
-    public String getTopic() {
-        return topic;
+    public boolean isStatus() {
+        return status;
     }
 }
