@@ -1,38 +1,35 @@
 package com.server;
 
-import java.util.Random;
-
 import org.zeromq.SocketType;
-import org.zeromq.ZMQ;
 import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 
-//
-//  Weather update server in Java
-//  Binds PUB socket to tcp://*:5556
-//  Publishes random weather updates
-//
 public class App {
-    public static void main(String[] args) throws Exception {
-        // Prepare our context and publisher
+    public static void main(String[] args) {
         try (ZContext context = new ZContext()) {
-            ZMQ.Socket publisher = context.createSocket(SocketType.PUB);
-            publisher.bind("tcp://*:5556");
-            publisher.bind("ipc://weather");
+            System.out.println("Initializing server...");
 
-            // Initialize random number generator
-            Random srandom = new Random(System.currentTimeMillis());
+            // Socket to listen for incoming requests
+            ZMQ.Socket responder = context.createSocket(SocketType.REP);
+            responder.bind("tcp://*:5555");
+
+            System.out.println("Server running on port 5555");
+
             while (!Thread.currentThread().isInterrupted()) {
-                // Get values that will fool the boss
-                int zipcode, temperature, relhumidity;
-                zipcode = 10000 + srandom.nextInt(10000);
-                temperature = srandom.nextInt(215) - 80 + 1;
-                relhumidity = srandom.nextInt(50) + 10 + 1;
+                // Wait for next request from client
+                String request = responder.recvStr(0).trim();
+                System.out.println("Received request: " + request);
 
-                // Send message to all subscribers
-                String update = String.format(
-                        "%05d %d %d", zipcode, temperature, relhumidity);
-                publisher.send(update, 0);
+                // Do some work
+                String reply = "Hello, " + request + "!";
+                Thread.sleep(1000);
+
+                // Send reply back to client
+                responder.send(reply.getBytes(ZMQ.CHARSET), 0);
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
+

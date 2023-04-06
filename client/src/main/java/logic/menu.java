@@ -32,9 +32,21 @@ public class menu {
 
                 case 2:
                     System.out.println("Enter the command: ");
+                    /*Verification that the command is written in the right way*/
+                    boolean continuar=false;//para preguntar otra vez si esta mal el comando escrito
+                    while (!continuar) {
+                        String command = scanner.nextLine();
+
+                        if (command.startsWith("renew") || command.startsWith("request") || command.startsWith("return")) {
+                            //enviar comando a el servirdor
+                            continuar=true;
+                        } else {
+                            System.out.println("Enter one of the follow commands: renew, request, return.");
+                        }
+                    }
                     break;
 
-                case 3:
+                case 0:
                     System.out.println("Thanks for use our system...");
 
                 default:
