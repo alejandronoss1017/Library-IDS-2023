@@ -1,5 +1,6 @@
 package com.client;
 
+import logic.menu;
 import org.zeromq.SocketType;
 import org.zeromq.ZMQ;
 import org.zeromq.ZContext;
@@ -16,8 +17,12 @@ public class App {
             System.out.println("Connection established");
 
             // while (condition) {
-
             // }
+
+            /*
+            menu getInMenu = new menu();
+            getInMenu.main(args);
+            */
 
             // Do 10 requests, waiting each time for a response
             for (int requestNbr = 0; requestNbr != 10; requestNbr++) {
