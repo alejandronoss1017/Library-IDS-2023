@@ -3,6 +3,8 @@ package logic;
 import java.util.Scanner;
 
 public class menu {
+    private static String lastCommand = ""; // variable de instancia para almacenar el último comando ingresado por el usuario
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int option = -1;
@@ -38,7 +40,7 @@ public class menu {
                         String command = scanner.nextLine();
 
                         if (command.startsWith("renew") || command.startsWith("request") || command.startsWith("return")) {
-                            //enviar comando a el servirdor
+                            lastCommand = command; // actualiza el último comando ingresado por el usuario
                             continuar=true;
                         } else {
                             System.out.println("Enter one of the follow commands: renew, request, return.");
@@ -48,6 +50,7 @@ public class menu {
 
                 case 0:
                     System.out.println("Thanks for use our system...");
+                    break;
 
                 default:
                     System.out.println("Option no valid");
@@ -56,5 +59,8 @@ public class menu {
         }
         scanner.close();
     }
-}
 
+    public static String getLastCommand() {
+        return lastCommand; // método que devuelve el último comando ingresado por el usuario
+    }
+}

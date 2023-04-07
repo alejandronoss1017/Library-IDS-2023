@@ -21,15 +21,17 @@ public class App {
 
 
                 // Send requests to server
-                String[] requests = {"John", "Mary", "Peter"};
+                String[] requests = (menu.getLastCommand()).split(" ");;
+                if((menu.getLastCommand()).startsWith("request")) {
+                    for (String request : requests) {
+                        //hacer la accion de request
+                        System.out.println("Sending request: " + request);
+                        requester.send(request.getBytes(ZMQ.CHARSET), 0);
 
-                for (String request : requests) {
-                    System.out.println("Sending request: " + request);
-                    requester.send(request.getBytes(ZMQ.CHARSET), 0);
-
-                    // Wait for response from server
-                    String reply = requester.recvStr(0).trim();
-                    System.out.println("Received reply: " + reply);
+                        // Wait for response from server
+                        String reply = requester.recvStr(0).trim();
+                        System.out.println("Received reply: " + reply);
+                    }
                 }
             }
         }
