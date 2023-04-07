@@ -3,6 +3,7 @@ package com.server.logic;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
 
 import static com.server.ServerInfo.*;
 
@@ -37,9 +38,13 @@ public class ActorRenewal implements Runnable {
                     }
                 } else {
 
-                    // Receive the message and print it
-                    String message = subscriberSocket.recvStr();
-                    System.out.printf("[SUSCRIBER " + RENEWALTOPIC + " " + Thread.currentThread() + "] Received message '%s'%n", message);
+                    // If the actor is ready, process the received message
+                    ZMsg msg = ZMsg.recvMsg(subscriberSocket);
+                    // String message = subscriberSocket.recvStr();
+                    // BookOperations.updateBook(message);
+                    System.out.printf(
+                            "[SUSCRIBER " + RENEWALTOPIC + " " + Thread.currentThread() + "] Received message '%s'%n",
+                            msg.getFirst().toString());
                 }
             }
 

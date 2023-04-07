@@ -3,6 +3,8 @@ package com.server.logic;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
+
 
 import static com.server.ServerInfo.*;
 
@@ -26,7 +28,8 @@ public class ActorReturn implements Runnable {
                 // Receive a message from the subscriber socket
                 subscriberSocket.recvStr();
 
-                // If the actor is not ready to process messages, wait for a CONFIRMATION message
+                // If the actor is not ready to process messages, wait for a CONFIRMATION
+                // message
                 if (!status) {
                     if (subscriberSocket.recvStr().equals(CONFIRMATION)) {
                         // Set the status to true once the CONFIRMATION message is received
@@ -36,18 +39,21 @@ public class ActorReturn implements Runnable {
                     }
                 } else {
                     // If the actor is ready, process the received message
-                    String message = subscriberSocket.recvStr();
-                    System.out.printf("[SUSCRIBER " + RETURNTOPIC + " " + Thread.currentThread() + "] Received message '%s'%n", message);
+                    ZMsg msg = ZMsg.recvMsg(subscriberSocket);
+                    // String message = subscriberSocket.recvStr();
+                    // BookOperations.updateBook(message);
+                    System.out.printf(
+                            "[SUSCRIBER " + RETURNTOPIC + " " + Thread.currentThread() + "] Received message '%s'%n",
+                            msg.getFirst().toString());
                 }
             }
             contextSUB.destroy();
         } catch (Exception e) {
             // Handle exceptions and set the status to false if the thread is interrupted
-            if(e.getMessage().equals("Errno 4")) {
+            if (e.getMessage().equals("Errno 4")) {
                 System.out.println("[" + RETURNTOPIC + " " + Thread.currentThread() + "]: Hilo interrumpido.");
                 status = false;
-            }
-            else
+            } else
                 System.err.println("[" + RETURNTOPIC + " " + Thread.currentThread() + "]: " + e.getMessage());
         }
     }
