@@ -1,47 +1,39 @@
 package logic;
 
-import java.util.Scanner;
+public class Menu {
+    // variable de instancia para almacenar el último comando ingresado por el
+    // usuario
+    private String lastCommand = "";
 
-public class menu {
-    private static String lastCommand = ""; // variable de instancia para almacenar el último comando ingresado por el usuario
+    public void setLastCommand(String command) {
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-
-                    /*Verification that the command is written in the right way*/
-                    boolean continuar=false;//para preguntar otra vez si esta mal el comando escrito
-                    while (!continuar) {
-                        System.out.println("Enter the command: ");
-
-                        String command = scanner.nextLine();
-
-                        if (command.startsWith("renew") || command.startsWith("request") || command.startsWith("return")) {
-                            lastCommand = command; // actualiza el último comando ingresado por el usuario
-                            continuar=true;
-                        }
-
-                        if (command.equals("help")){
-                            System.out.println("================================================================");
-                            System.out.println("============= Renew book =============");
-                            System.out.println("renew + <code of the receipt>");
-                            System.out.println(" ");
-
-                            System.out.println("============= Return book =============");
-                            System.out.println("return + <code of the receipt>");
-                            System.out.println(" ");
-
-                            System.out.println("============= Request book ============");
-                            System.out.println("request + <code of the book>");
-                            System.out.println(" ");
-                        }
-                    }
-
-        scanner.close();
-
+        if (command.startsWith("Renew") || command.startsWith("Request") || command.startsWith("Return")) {
+            lastCommand = command; // actualiza el último comando ingresado por el usuario
+        } else if (command.equals("help")) {
+            showMenu();
+        }
     }
 
-    public static String getLastCommand() {
+    public void askForCommand() {
+        System.out.println("Enter the command: ");
+    }
+
+    public void showMenu() {
+        System.out.println("================================================================");
+        System.out.println("============= Renewal book =============");
+        System.out.println("Renewal + <code of the receipt>");
+        System.out.println(" ");
+
+        System.out.println("============= Return book =============");
+        System.out.println("Return + <code of the receipt>");
+        System.out.println(" ");
+
+        System.out.println("============= Request book ============");
+        System.out.println("Request + <code of the book>");
+        System.out.println(" ");
+    }
+
+    public String getLastCommand() {
         return lastCommand; // método que devuelve el último comando ingresado por el usuario
     }
 }

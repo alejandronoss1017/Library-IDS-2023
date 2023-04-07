@@ -1,6 +1,9 @@
 package com.client;
 
-import logic.menu;
+import logic.Menu;
+
+import java.util.Scanner;
+
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -13,27 +16,54 @@ public class App {
             System.out.println("Connecting to server...");
             ZMQ.Socket requester = context.createSocket(SocketType.REQ);
             boolean conecto = requester.connect("tcp://localhost:5555");
-            if (conecto) {
 
+            Scanner scanner = new Scanner(System.in);
+            Menu menu = new Menu();
+            ZMsg msg = new ZMsg();
+            while (conecto) {
 
-                menu showMenu = new menu();
-                showMenu.main(args);
-
+                menu.askForCommand();
+                menu.setLastCommand(scanner.nextLine());
 
                 // Send requests to server
-                String[] requests = (menu.getLastCommand()).split(" ");;
-                if((menu.getLastCommand()).startsWith("request")) {
-                    for (String request : requests) {
-                        //hacer la accion de request
-                        System.out.println("Sending request: " + request);
-                        requester.send(request.getBytes(ZMQ.CHARSET), 0);
+                String[] requests = (menu.getLastCommand()).split(" ");
 
-                        // Wait for response from server
-                        String reply = requester.recvStr(0).trim();
-                        System.out.println("Received reply: " + reply);
-                    }
+                for (String string : requests) {
+                    msg.add(string);
                 }
+
+                if ((menu.getLastCommand()).startsWith("Request")) {
+                    // hacer la accion de request
+                    System.out.println("Sending request: " + requests[1]);
+
+                    msg.send(requester);
+
+                    // Wait for response from server
+                    String reply = requester.recvStr(0).trim();
+                    System.out.println("Received reply: " + reply);
+                    msg.clear();
+                } else if ((menu.getLastCommand()).startsWith("Return")) {
+                    // hacer la accion de request
+                    System.out.println("Sending request: " + requests[1]);
+
+                    msg.send(requester);
+
+                    // Wait for response from server
+                    String reply = requester.recvStr(0).trim();
+                    System.out.println("Received reply: " + reply);
+                } else if ((menu.getLastCommand()).startsWith("Renewal")) {
+                    // hacer la accion de request
+                    System.out.println("Sending request: " + requests[1]);
+
+                    msg.send(requester);
+
+                    // Wait for response from server
+                    String reply = requester.recvStr(0).trim();
+                    System.out.println("Received reply: " + reply);
+                }
+
             }
+            scanner.close();
         }
     }
 }
