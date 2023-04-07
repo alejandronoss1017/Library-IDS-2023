@@ -5,6 +5,9 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.server.db.BorrowOperations;
+import com.server.model.Borrow;
+
 import static com.server.ServerInfo.*;
 
 public class ActorRenewal implements Runnable {
@@ -40,11 +43,17 @@ public class ActorRenewal implements Runnable {
 
                     // If the actor is ready, process the received message
                     ZMsg msg = ZMsg.recvMsg(subscriberSocket);
-                    // String message = subscriberSocket.recvStr();
-                    // BookOperations.updateBook(message);
-                    System.out.printf(
-                            "[SUSCRIBER " + RENEWALTOPIC + " " + Thread.currentThread() + "] Received message '%s'%n",
-                            msg.getFirst().toString());
+
+                    // Database Operations
+                    Borrow borrow = BorrowOperations.findBorrowByIsbn(msg.popString());
+
+                    if (borrow != null) {
+                        BorrowOperations.renewalFinalDate(borrow);
+                        
+                        System.out.println("[" + RENEWALTOPIC + " " + Thread.currentThread() + "]: Final date updated.");
+                    } else {
+                        System.out.println("[" + RENEWALTOPIC + " " + Thread.currentThread() + "]: Borrow not found.");
+                    }
                 }
             }
 

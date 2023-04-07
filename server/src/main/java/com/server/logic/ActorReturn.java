@@ -5,6 +5,8 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.server.db.BorrowOperations;
+import com.server.model.Borrow;
 
 import static com.server.ServerInfo.*;
 
@@ -40,11 +42,17 @@ public class ActorReturn implements Runnable {
                 } else {
                     // If the actor is ready, process the received message
                     ZMsg msg = ZMsg.recvMsg(subscriberSocket);
-                    // String message = subscriberSocket.recvStr();
-                    // BookOperations.updateBook(message);
-                    System.out.printf(
-                            "[SUSCRIBER " + RETURNTOPIC + " " + Thread.currentThread() + "] Received message '%s'%n",
-                            msg.getFirst().toString());
+
+                    // Database Operations
+                    Borrow borrow = BorrowOperations.findBorrowByIsbn(msg.popString());
+
+                    if (borrow != null) {
+                        BorrowOperations.returnBorrow(borrow);
+                        System.out.println("[" + RETURNTOPIC + " " + Thread.currentThread() + "]: Book returned.");
+                    } else {
+                        System.out.println("[" + RETURNTOPIC + " " + Thread.currentThread() + "]: Borrow not found.");
+                    }
+
                 }
             }
             contextSUB.destroy();
