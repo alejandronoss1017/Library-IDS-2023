@@ -1,6 +1,8 @@
 package com.server.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -18,6 +20,9 @@ public class Book implements Serializable {
     @Column(name = "book_amount")
     private Integer amount;
 
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Borrow> borrows;
+
     // Default constructor is required by JPA, so it must be declared
     public Book() {
     }
@@ -26,6 +31,7 @@ public class Book implements Serializable {
         this.isbn = isbn;
         this.name = name;
         this.amount = amount;
+        this.borrows = new ArrayList<>();
     }
 
     public String getIsbn() {
