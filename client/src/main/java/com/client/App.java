@@ -1,48 +1,39 @@
 package com.client;
 
-import java.util.StringTokenizer;
-
+import logic.menu;
 import org.zeromq.SocketType;
-import org.zeromq.ZMQ;
 import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
 
-//
-//  Weather update client in Java
-//  Connects SUB socket to tcp://localhost:5556
-//  Collects weather updates and finds avg temp in zipcode
-//
 public class App {
     public static void main(String[] args) {
         try (ZContext context = new ZContext()) {
             // Socket to talk to server
-            System.out.println("Collecting updates from weather server");
-            ZMQ.Socket subscriber = context.createSocket(SocketType.SUB);
-            subscriber.connect("tcp://localhost:5556");
+            System.out.println("Connecting to server...");
+            ZMQ.Socket requester = context.createSocket(SocketType.REQ);
+            boolean conecto = requester.connect("tcp://localhost:5555");
+            if (conecto) {
 
-            // Subscribe to zipcode, default is NYC, 10001
-            String filter = (args.length > 0) ? args[0] : "10001 ";
-            subscriber.subscribe(filter.getBytes(ZMQ.CHARSET));
 
-            // Process 100 updates
-            int update_nbr;
-            long total_temp = 0;
-            for (update_nbr = 0; update_nbr < 100; update_nbr++) {
-                // Use trim to remove the tailing '0' character
-                String string = subscriber.recvStr(0).trim();
+                menu showMenu = new menu();
+                showMenu.main(args);
 
-                StringTokenizer sscanf = new StringTokenizer(string, " ");
-                int zipcode = Integer.valueOf(sscanf.nextToken());
-                int temperature = Integer.valueOf(sscanf.nextToken());
-                int relhumidity = Integer.valueOf(sscanf.nextToken());
 
-                total_temp += temperature;
+                // Send requests to server
+                String[] requests = (menu.getLastCommand()).split(" ");;
+                if((menu.getLastCommand()).startsWith("request")) {
+                    for (String request : requests) {
+                        //hacer la accion de request
+                        System.out.println("Sending request: " + request);
+                        requester.send(request.getBytes(ZMQ.CHARSET), 0);
+
+                        // Wait for response from server
+                        String reply = requester.recvStr(0).trim();
+                        System.out.println("Received reply: " + reply);
+                    }
+                }
             }
-
-            System.out.println(
-                    String.format(
-                            "Average temperature for zipcode '%s' was %d.",
-                            filter,
-                            (int) (total_temp / update_nbr)));
         }
     }
 }
