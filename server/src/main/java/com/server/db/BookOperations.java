@@ -101,4 +101,16 @@ public class BookOperations {
         emf.close();
         return true;
     }
+
+    /**
+     * Finds a book by its ISBN.
+     *
+     * @param isbn The ISBN of the book to be found.
+     * @return The book with the given ISBN, if it exists. Otherwise, returns null.
+     */
+    public static Book findByIsbn(String isbn) {
+        Book book = em.find(Book.class, isbn);
+        return book;
+
+    }
 }
