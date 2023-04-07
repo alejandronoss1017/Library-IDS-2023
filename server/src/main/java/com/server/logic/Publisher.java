@@ -39,7 +39,6 @@ public class Publisher implements Runnable {
 
             while (!Thread.currentThread().isInterrupted()) {
                 msg = buffer.consume();
-                System.out.println("Publisher: " + msg.toString());
                 // msg.add(msg.getFirst().toString());
                 msg.send(publisherSocket);
                 System.out.println("[PUBLISHER " + Thread.currentThread() + "]: Message sent");
