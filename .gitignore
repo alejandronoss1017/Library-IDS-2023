@@ -2,6 +2,9 @@
 *.class
 target
 
+# .env file
+.env
+
 # Log file
 *.log
 
@@ -15,7 +18,7 @@ target
 *.rar
 
 # IDEs directories and files
-.vscode/*
+!.vscode/
 !.vscode/extensions.json
 .idea
 .DS_Store
@@ -25,3 +28,9 @@ target
 *.sln
 *.sw?
 *.iml
+
+client/.vscode/*
+client/.idea/*
+
+server/.vscode/*
+server/.idea/*
