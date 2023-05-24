@@ -1,5 +1,6 @@
 package com.client;
 
+import com.client.logic.FileOperation;
 import com.client.logic.Operation;
 import com.client.model.Menu;
 
@@ -20,6 +21,7 @@ public class App {
         boolean hasService = false;
         boolean hasIsbn = false;
         boolean hasCampus = false;
+        boolean hasFile = false;
 
         for (int i = 0; i < args.length; i++) {
 
@@ -69,6 +71,7 @@ public class App {
             else if (args[i].equals("-f")) {
                 if (i + 1 < args.length) {
                     fileName = args[i + 1];
+                    hasFile = true;
                     i++; // Jumps to the next argument
                 } else {
                     System.out.println("The flag '-f' requires a file name.");
@@ -77,26 +80,27 @@ public class App {
             }
         }
 
-        // Check if at least one of the required flags is present
-        if (!hasService || !hasIsbn || !hasCampus) {
-            System.out.println("Missing one or more required flags. Please provide values for -s, --isbn, and -c.");
+        // Check if at least the file flag is present
+        if (!hasFile) {
+            System.out.println("Missing the required '-f' flag. Please provide a file name.");
             return;
         }
 
         // Call the appropriate operation based on the provided arguments
-        if (service.equalsIgnoreCase("Borrow")) {
-            Operation.sendRequest(Operation.createRequest("Borrow", isbn, Integer.toString(campus)));
-        } else if (service.equalsIgnoreCase("Renewal")) {
-            Operation.sendRequest(Operation.createRequest("Renewal", isbn, Integer.toString(campus)));
-        } else if (service.equalsIgnoreCase("Return")) {
-            // Logic
-
-        } else {
-            System.out.println("Invalid service value. Please use Borrow, Renewal, or Return.");
+        if (hasService && hasIsbn && hasCampus) {
+            if (service.equalsIgnoreCase("Borrow")) {
+                Operation.sendRequest(Operation.createRequest("Borrow", isbn, Integer.toString(campus)));
+            } else if (service.equalsIgnoreCase("Renewal")) {
+                Operation.sendRequest(Operation.createRequest("Renewal", isbn, Integer.toString(campus)));
+            } else if (service.equalsIgnoreCase("Return")) {
+                // Logic
+            } else {
+                System.out.println("Invalid service value. Please use Borrow, Renewal, or Return.");
+            }
         }
 
-        if (!fileName.isEmpty()) {
-            // Logic
+        if (hasFile && !fileName.isEmpty()) {
+            FileOperation.sendMessages(FileOperation.readFile(fileName));
         }
 
     }
