@@ -23,7 +23,7 @@ public class FileOperation {
 
             scanner.close();
         } catch (FileNotFoundException e) {
-            System.err.println("Archivo no encontrado: " + e.getMessage());
+            System.err.println("File not founded: " + e.getMessage());
         }
 
         return data;
