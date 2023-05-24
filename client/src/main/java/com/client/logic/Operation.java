@@ -74,11 +74,20 @@ public class Operation {
                     // The connection has been terminated, try to change the connection
                     connection.changeConnection();
                     retryCount++;
+                } else if (e.getErrorCode() == ZMQ.Error.EFSM.getCode()) {
+                    // The connection is not established, try to change the connection
+                    connection.changeConnection();
+                    retryCount++;
                 } else {
                     // Another type of ZMQ.Error, print the message and exit the loop
                     System.out.println("Error: " + e.getMessage());
                     break;
                 }
+            } catch (NullPointerException e) {
+                // This is thrown when the connection is not established, the response is null
+                System.out.println("The server is not responding. Retrying...");
+                connection.changeConnection();
+                retryCount++;
             } catch (Exception e) {
                 // Another type of exception, print the message and exit the loop
                 System.out.println("Error: " + e.getMessage());
