@@ -23,8 +23,8 @@ public class Connection {
         Dotenv dotenv = Dotenv.load();
 
         // Get the IP, PORT and TIMEOUT from the .env file
-        this.ipServer = dotenv.get("IP_SERVER");
-        this.portServer = dotenv.get("PORT_SERVER");
+        this.ipServer = dotenv.get("IP_SERVER_A");
+        this.portServer = dotenv.get("PORT_SERVER_B");
         this.timeout = dotenv.get("TIMEOUT");
 
         // Initialize the context and the socket
@@ -52,22 +52,22 @@ public class Connection {
         // Load the .env file
         Dotenv dotenv = Dotenv.load();
 
-        if (this.ipServer.equals(dotenv.get("IP_SERVER"))) {
+        if (this.ipServer.equals(dotenv.get("IP_SERVER_A"))) {
             // Close and free the resources of the actual context and the actual socket
             socket.close();
             context.close();
 
             // Obtains the backup IP and PORT from the .env file
-            this.ipServer = dotenv.get("IP_SERVER_BACKUP");
-            this.portServer = dotenv.get("PORT_SERVER_BACKUP");
+            this.ipServer = dotenv.get("IP_SERVER_B");
+            this.portServer = dotenv.get("PORT_SERVER_B");
         } else {
             // Close and free the resources of the actual context and the actual socket
             socket.close();
             context.close();
 
             // Obtains the backup IP and PORT from the .env file
-            this.ipServer = dotenv.get("IP_SERVER");
-            this.portServer = dotenv.get("PORT_SERVER");
+            this.ipServer = dotenv.get("IP_SERVER_A");
+            this.portServer = dotenv.get("PORT_SERVER_B");
         }
 
         // Create a new context and a new socket
