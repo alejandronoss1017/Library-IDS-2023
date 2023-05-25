@@ -35,13 +35,18 @@ public class Operation {
 
     }
 
-    public static void sendRequest(final ZMsg request) {
+    public static void sendRequest(ZMsg request) {
 
-        Connection connection = Connection.getInstance();
+        Connection connection = Connection.getInstance(Integer.parseInt(request.getLast().toString()));
 
         // Number of retries
         int retryCount = 0;
         int maxRetries = 3;
+
+        // Creates a copy of the request, if the connection is changed, the request will
+        // be sent again with the same data and the same number of retries
+        // just with a different connection.
+        ZMsg lastRequest = request.duplicate();
 
         while (retryCount < maxRetries) {
 
@@ -73,10 +78,32 @@ public class Operation {
                 if (e.getErrorCode() == ZMQ.Error.ETERM.getCode()) {
                     // The connection has been terminated, try to change the connection
                     connection.changeConnection();
+
+                    request = lastRequest.duplicate();
+
+                    if (Integer.parseInt(lastRequest.getLast().toString()) == 1) {
+                        request.getLast().reset("2");
+                    } else {
+                        request.getLast().reset("1");
+                    }
+
+                    lastRequest = request.duplicate();
+
                     retryCount++;
                 } else if (e.getErrorCode() == ZMQ.Error.EFSM.getCode()) {
                     // The connection is not established, try to change the connection
                     connection.changeConnection();
+
+                    request = lastRequest.duplicate();
+
+                    if (Integer.parseInt(lastRequest.getLast().toString()) == 1) {
+                        request.getLast().reset("2");
+                    } else {
+                        request.getLast().reset("1");
+                    }
+
+                    lastRequest = request.duplicate();
+
                     retryCount++;
                 } else {
                     // Another type of ZMQ.Error, print the message and exit the loop
@@ -87,6 +114,17 @@ public class Operation {
                 // This is thrown when the connection is not established, the response is null
                 System.out.println("The server is not responding. Retrying...");
                 connection.changeConnection();
+
+                request = lastRequest.duplicate();
+
+                if (Integer.parseInt(lastRequest.getLast().toString()) == 1) {
+                    request.getLast().reset("2");
+                } else {
+                    request.getLast().reset("1");
+                }
+
+                lastRequest = request.duplicate();
+
                 retryCount++;
             } catch (Exception e) {
                 // Another type of exception, print the message and exit the loop
