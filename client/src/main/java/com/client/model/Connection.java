@@ -24,7 +24,7 @@ public class Connection {
 
         // Get the IP, PORT and TIMEOUT from the .env file
         this.ipServer = dotenv.get("IP_SERVER_A");
-        this.portServer = dotenv.get("PORT_SERVER_B");
+        this.portServer = dotenv.get("PORT_SERVER_A");
         this.timeout = dotenv.get("TIMEOUT");
 
         // Initialize the context and the socket
@@ -67,7 +67,7 @@ public class Connection {
 
             // Obtains the backup IP and PORT from the .env file
             this.ipServer = dotenv.get("IP_SERVER_A");
-            this.portServer = dotenv.get("PORT_SERVER_B");
+            this.portServer = dotenv.get("PORT_SERVER_A");
         }
 
         // Create a new context and a new socket
