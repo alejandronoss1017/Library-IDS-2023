@@ -18,13 +18,19 @@ public class Connection {
     private String portServer;
     private String timeout;
 
-    private Connection() {
+    private Connection(final int campus) {
         // Load the .env file
         Dotenv dotenv = Dotenv.load();
 
         // Get the IP, PORT and TIMEOUT from the .env file
-        this.ipServer = dotenv.get("IP_SERVER_A");
-        this.portServer = dotenv.get("PORT_SERVER_A");
+        if (campus == 1) {
+            this.ipServer = dotenv.get("IP_SERVER_A");
+            this.portServer = dotenv.get("PORT_SERVER_A");
+
+        } else {
+            this.ipServer = dotenv.get("IP_SERVER_B");
+            this.portServer = dotenv.get("PORT_SERVER_B");
+        }
         this.timeout = dotenv.get("TIMEOUT");
 
         // Initialize the context and the socket
@@ -41,9 +47,9 @@ public class Connection {
         }
     }
 
-    public static synchronized Connection getInstance() {
+    public static synchronized Connection getInstance(final int campus) {
         if (instance == null) {
-            instance = new Connection();
+            instance = new Connection(campus);
         }
         return instance;
     }
