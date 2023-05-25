@@ -5,6 +5,8 @@ import org.zeromq.ZMQException;
 import org.zeromq.ZMsg;
 import com.client.model.Connection;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class Operation {
 
     public static ZMsg createRequest(final String service, final String isbn, final String campus) {
@@ -41,7 +43,7 @@ public class Operation {
 
         // Number of retries
         int retryCount = 0;
-        int maxRetries = 3;
+        int maxRetries = Integer.parseInt(Dotenv.load().get("MAX_RETRIES"));
 
         // Creates a copy of the request, if the connection is changed, the request will
         // be sent again with the same data and the same number of retries
@@ -54,8 +56,6 @@ public class Operation {
             ZMsg response = new ZMsg();
 
             try {
-
-                connection.getSocket();
 
                 // If the socket does not receive any response within the set time, it will
                 // throw a ZMQException
