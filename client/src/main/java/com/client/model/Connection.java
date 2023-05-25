@@ -50,6 +50,10 @@ public class Connection {
     public static synchronized Connection getInstance(final int campus) {
         if (instance == null) {
             instance = new Connection(campus);
+        } else if (campus == 1) {
+            instance = new Connection(campus);
+        } else {
+            instance = new Connection(campus);
         }
         return instance;
     }
@@ -58,7 +62,7 @@ public class Connection {
         // Load the .env file
         Dotenv dotenv = Dotenv.load();
 
-        if (this.ipServer.equals(dotenv.get("IP_SERVER_A"))) {
+        if (this.ipServer.equals(dotenv.get("IP_SERVER_A")) && this.portServer.equals(dotenv.get("PORT_SERVER_A"))) {
             // Close and free the resources of the actual context and the actual socket
             socket.close();
             context.close();
