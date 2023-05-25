@@ -48,7 +48,7 @@ public class Operation {
         // Creates a copy of the request, if the connection is changed, the request will
         // be sent again with the same data and the same number of retries
         // just with a different connection.
-        ZMsg lastRequest = request.duplicate();
+        final ZMsg lastRequest = request.duplicate();
 
         while (retryCount < maxRetries) {
 
@@ -81,28 +81,12 @@ public class Operation {
 
                     request = lastRequest.duplicate();
 
-                    if (Integer.parseInt(lastRequest.getLast().toString()) == 1) {
-                        request.getLast().reset("2");
-                    } else {
-                        request.getLast().reset("1");
-                    }
-
-                    lastRequest = request.duplicate();
-
                     retryCount++;
                 } else if (e.getErrorCode() == ZMQ.Error.EFSM.getCode()) {
                     // The connection is not established, try to change the connection
                     connection.changeConnection();
 
                     request = lastRequest.duplicate();
-
-                    if (Integer.parseInt(lastRequest.getLast().toString()) == 1) {
-                        request.getLast().reset("2");
-                    } else {
-                        request.getLast().reset("1");
-                    }
-
-                    lastRequest = request.duplicate();
 
                     retryCount++;
                 } else {
@@ -116,14 +100,6 @@ public class Operation {
                 connection.changeConnection();
 
                 request = lastRequest.duplicate();
-
-                if (Integer.parseInt(lastRequest.getLast().toString()) == 1) {
-                    request.getLast().reset("2");
-                } else {
-                    request.getLast().reset("1");
-                }
-
-                lastRequest = request.duplicate();
 
                 retryCount++;
             } catch (Exception e) {
