@@ -29,6 +29,9 @@ To run this project, you will need to add the following environment variables to
 `MAX_RETRIES` Number of attempts to resend the request to one of the two servers.
 
 >The location of the .env file should be the root of the client folder.
+
+![.envPosition](images/envPosition.png)
+
 ## 🏗️ Compilation
 
 Once the repository is cloned, should get into de client folder
