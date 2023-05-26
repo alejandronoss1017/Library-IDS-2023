@@ -108,3 +108,14 @@ Using a file to request various services at once.
 ```
 > If you are going to use a file, the path is relative to the .jar file, so if the file is on the root of the client folder an example path will be ../myFile.txt
 
+
+## 📝 File Format
+
+The file must be a `.txt` file, and the format of the file must be like this:
+
+```
+  Borrow A2L3K4I5 1
+  Renewal A2L3K4I5 1
+  Return A2L3K4I5 1
+  ...
+```
