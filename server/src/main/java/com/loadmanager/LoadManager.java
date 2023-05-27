@@ -1,4 +1,4 @@
-package com.server.loadmanager;
+package com.loadmanager;
 
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
