@@ -105,6 +105,7 @@
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
+            <finalName>app</finalName>
           </configuration>
           <executions>
             <execution>
