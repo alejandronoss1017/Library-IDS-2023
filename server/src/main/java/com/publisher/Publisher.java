@@ -1,4 +1,4 @@
-package com.server.publisher;
+package com.publisher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

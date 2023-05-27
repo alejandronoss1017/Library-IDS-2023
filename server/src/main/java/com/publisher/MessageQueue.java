@@ -1,4 +1,4 @@
-package com.server.publisher;
+package com.publisher;
 
 import java.util.LinkedList;
 import java.util.Queue;
