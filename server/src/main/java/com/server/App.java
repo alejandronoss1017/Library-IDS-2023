@@ -9,8 +9,12 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class App {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
+
     private static Process loadManagerProcess = ProcessLogic.startProcess("java", "-jar",
             Dotenv.load().get("LOAD_MANAGER_JAR"));
+
+    private static Process publisherProcess = ProcessLogic.startProcess("java", "-jar",
+            Dotenv.load().get("PUBLISHER_JAR"));
 
     public static void main(String[] args) throws Exception {
 
@@ -21,20 +25,17 @@ public class App {
 
         logger.info("Initializing server...");
 
-        // Add a shutdown hook to destroy the loadManagerProcess when the server is
-        // shutdown
-        ProcessLogic.addShutdownHook(loadManagerProcess);
+        // Add a shutdown hooks to destroy the processes when the server is shutdown
 
-        // Wait for the loadManagerProcess to start
-        if (ProcessLogic.waitForProcess(loadManagerProcess) && loadManagerProcess != null) {
-            logger.info("Load Manager started successfully");
-            logger.info("Load Manager PID: " + loadManagerProcess.pid());
-
+        // Wait for all process to start
+        if (waitForProcesses()) {
+            showProcessesInfo();
         } else {
-            logger.error("Load Manager failed to start");
+            logger.error("Server failed to start");
             return;
         }
 
+        setShutdownHooks();
         // Start a thread to print the output from the loadManagerProcess
 
         while (true) {
@@ -58,8 +59,46 @@ public class App {
                 }
             }
 
+            if (!publisherProcess.isAlive()) {
+                logger.error("Publisher process is not running");
+
+                ProcessLogic.stopProcess(publisherProcess);
+
+                logger.info("Attempting to restart Publisher process...");
+                publisherProcess = ProcessLogic.startProcess("java", "-jar",
+                        Dotenv.load().get("PUBLISHER_JAR"));
+                ProcessLogic.addShutdownHook(publisherProcess);
+
+                if (ProcessLogic.waitForProcess(publisherProcess)) {
+                    logger.info("Publisher restarted successfully");
+                    logger.info("Publisher PID: " + publisherProcess.pid());
+                } else {
+                    logger.error("Publisher failed to restart");
+                    return;
+                }
+            }
+
             Thread.sleep(1000);
         }
 
     }
+
+    public static void setShutdownHooks() {
+        ProcessLogic.addShutdownHook(loadManagerProcess);
+        ProcessLogic.addShutdownHook(publisherProcess);
+    }
+
+    public static boolean waitForProcesses() {
+
+        boolean pLoadManager = ProcessLogic.waitForProcess(loadManagerProcess) && loadManagerProcess != null;
+        boolean pPub = ProcessLogic.waitForProcess(publisherProcess) && publisherProcess != null;
+
+        return pPub && pLoadManager;
+    }
+
+    public static void showProcessesInfo() {
+        logger.info("Load Manager PID: " + loadManagerProcess.pid());
+        logger.info("Publisher PID: " + publisherProcess.pid());
+    }
+
 }
