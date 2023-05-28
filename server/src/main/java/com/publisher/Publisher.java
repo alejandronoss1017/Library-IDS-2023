@@ -41,23 +41,10 @@ public class Publisher {
 
                 ZMsg msg = ZMsg.recvMsg(pullSocket);
 
-                // messageQueue.produce(msg);
-
                 logger.info("Message received from server: " + msg);
 
-                // The first frame is the topic
-                String topic = msg.popString();
-
-                // The second frame is the message
-                String message = msg.popString();
-
-                // the third frame is the campus
-                String campus = msg.popString();
-
                 // Send the message to subscribers of the topic
-                pubSocket.sendMore(topic);
-                pubSocket.sendMore(campus);
-                pubSocket.send(message);
+                msg.send(pubSocket);
 
             }
 
