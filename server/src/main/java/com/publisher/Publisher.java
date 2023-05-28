@@ -8,7 +8,6 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 import org.zeromq.ZMsg;
 
-import com.messageQueue.MessageQueue;
 import com.utils.SocketUtil;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -19,7 +18,6 @@ public class Publisher {
     private static final String PUB_PORT = Dotenv.load().get("PUB_SUB_PORT");
     private static final String[] TOPICS = Dotenv.load().get("TOPICS").split(",");
     private static final Logger logger = LoggerFactory.getLogger(Publisher.class);
-    private static MessageQueue messageQueue = MessageQueue.getInstance();
 
     public static void main(String[] args) {
 
@@ -38,8 +36,9 @@ public class Publisher {
             logger.info("Push/Pull Queue running on port " + PULL_FROM_PUB_TO_QUEUE_PORT);
             logger.info("Publisher/Subscriber running on port " + PUB_PORT);
 
+            logger.info("Waiting for messages...");
+
             while (!Thread.currentThread().isInterrupted()) {
-                logger.info("Waiting for messages...");
 
                 ZMsg msg = ZMsg.recvMsg(pullSocket);
 
