@@ -16,6 +16,7 @@ public class ReturnActor {
     private static final Logger logger = LoggerFactory.getLogger(ReturnActor.class);
     private static final String PUBLISHER_IP = Dotenv.load().get("PUBLISHER_IP");
     private static final String PUBLISHER_PORT = Dotenv.load().get("PUB_SUB_PORT");
+    private static final String TOPIC = Dotenv.load().get("RETURN_TOPIC");
     private static MessageQueue returnWorkQueue = MessageQueue.getInstance();
 
     public static void main(String[] args) {
@@ -24,7 +25,7 @@ public class ReturnActor {
             ZMQ.Socket subscriber = SocketUtil.connectSocket(context, SocketType.SUB, PUBLISHER_IP, PUBLISHER_PORT,
                     false);
 
-            subscriber.subscribe("Return");
+            subscriber.subscribe(TOPIC);
 
             logger.info("Renewal listening on port " + PUBLISHER_PORT + " ...");
 

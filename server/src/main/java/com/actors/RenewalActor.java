@@ -16,6 +16,7 @@ public class RenewalActor {
     private static final Logger logger = LoggerFactory.getLogger(RenewalActor.class);
     private static final String PUBLISHER_IP = Dotenv.load().get("PUBLISHER_IP");
     private static final String PUBLISHER_PORT = Dotenv.load().get("PUB_SUB_PORT");
+    private static final String TOPIC = Dotenv.load().get("RENEWAL_TOPIC");
     private static MessageQueue renewalWorkQueue = MessageQueue.getInstance();
 
     public static void main(String[] args) {
@@ -24,9 +25,9 @@ public class RenewalActor {
             ZMQ.Socket subscriber = SocketUtil.connectSocket(context, SocketType.SUB, PUBLISHER_IP, PUBLISHER_PORT,
                     false);
 
-            subscriber.subscribe("Renewal");
+            subscriber.subscribe(TOPIC);
 
-            logger.info("Renewal listening on port" + PUBLISHER_PORT + " ...");
+            logger.info("Renewal listening on port " + PUBLISHER_PORT + " ...");
 
             // Start a thread to do the work of the actor
             Thread renewalThread = new Thread(new DoWorkThread(renewalWorkQueue));
