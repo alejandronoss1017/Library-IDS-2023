@@ -1,11 +1,9 @@
-package com.publisher;
+package com.messageQueue;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-
 import org.zeromq.ZMsg;
-
 
 public class MessageQueue {
     private static MessageQueue instance = null;
@@ -31,6 +29,32 @@ public class MessageQueue {
             wait();
         }
         return queue.poll();
+    }
+
+    public synchronized boolean isEmpty() {
+        return queue.isEmpty();
+    }
+
+    public synchronized int size() {
+        return queue.size();
+    }
+
+    public static void main(String[] args) {
+        MessageQueue queue = MessageQueue.getInstance();
+
+        Thread receiverThread = new Thread(new ReceiverThread(queue));
+        receiverThread.start();
+
+        Thread senderThread = new Thread(new SenderThread(queue));
+        senderThread.start();
+
+        try {
+            receiverThread.join();
+            senderThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
