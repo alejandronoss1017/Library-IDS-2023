@@ -50,7 +50,7 @@ public class Menu {
                     System.out.println("Enter the campus: ");
                     campus = scanner.nextLine();
 
-                    Operation.sendRequest(Operation.createRequest("Renewal", isbn, campus));
+                    Operation.sendRequest(Operation.createRequest("Return", isbn, campus));
 
                     pressToContinue();
                     clearConsole();
@@ -59,6 +59,12 @@ public class Menu {
                     System.out.println("Borrow book");
 
                     // Logic
+                    System.out.println("Enter the ISBN of the book: ");
+                    isbn = scanner.nextLine();
+                    System.out.println("Enter the campus: ");
+                    campus = scanner.nextLine();
+
+                    Operation.sendRequest(Operation.createRequest("Borrow", isbn, campus));
 
                     pressToContinue();
                     clearConsole();
