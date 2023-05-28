@@ -1,11 +1,14 @@
 package com.actors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
 public class RenewalActor {
+    private static final Logger logger = LoggerFactory.getLogger(RenewalActor.class);
 
     public static void main(String[] args) {
         try (ZContext context = new ZContext()) {
@@ -15,11 +18,13 @@ public class RenewalActor {
 
             subscriber.subscribe("Renewal");
 
+            logger.info("Renewal listening on port 7777");
+
             while (!Thread.currentThread().isInterrupted()) {
 
                 ZMsg msg = ZMsg.recvMsg(subscriber);
 
-                System.out.println("Renewal received: " + msg.toString());
+                logger.info("Renewal actor received: " + msg.toString());
             }
 
             subscriber.close();
