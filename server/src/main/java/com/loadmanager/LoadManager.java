@@ -26,9 +26,12 @@ public class LoadManager {
             // Socket to talk to publisher
             ZMQ.Socket pushSocket = initSocket(context, SocketType.PUSH, "*", PUSH_PORT, true);
 
+
+            // This is printed once the Load Manager is running
+            logger.info("Load Manager running on port " + LOAD_MANAGER_REPLY_PORT);
+            logger.info("Push/Pull running on port " + PUSH_PORT);
+
             while (!Thread.currentThread().isInterrupted()) {
-                logger.info("Load Manager running on port " + LOAD_MANAGER_REPLY_PORT);
-                logger.info("Push/Pull running on port " + PUSH_PORT);
                 logger.info("Waiting for request from client...");
 
                 ZMsg msg = new ZMsg();

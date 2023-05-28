@@ -31,9 +31,10 @@ public class Publisher {
             // Socket to send messages to subscribers
             ZMQ.Socket pubSocket = initSocket(context, SocketType.PUB, "*", PUB_PORT, true);
 
+            logger.info("Push/Pull running on port " + PULL_PORT);
+            logger.info("Publisher/Subscriber running on port " + PUB_PORT);
+            
             while (!Thread.currentThread().isInterrupted()) {
-
-                logger.info("Publisher/Subscriber running on port " + PUB_PORT);
                 logger.info("Waiting for messages...");
 
                 ZMsg msg = ZMsg.recvMsg(pullSocket);
