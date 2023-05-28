@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class LoadManager {
 
     private static final String LOAD_MANAGER_REPLY_PORT = Dotenv.load().get("LOAD_MANAGER_REPLY_PORT");
-    private static final String PUSH_PORT = Dotenv.load().get("PUSH_PULL_PORT");
+    private static final String PUSH_PORT_QUEUE = Dotenv.load().get("PUSH_FROM_LOAD_MANAGER_TO_QUEUE_PORT");
     private static final Logger logger = LoggerFactory.getLogger(LoadManager.class);
 
     public static void main(String[] args) {
@@ -23,13 +23,12 @@ public class LoadManager {
             // Socket to talk to clients
             ZMQ.Socket replySocket = initSocket(context, SocketType.REP, "*", LOAD_MANAGER_REPLY_PORT, true);
 
-            // Socket to talk to publisher
-            ZMQ.Socket pushSocket = initSocket(context, SocketType.PUSH, "*", PUSH_PORT, true);
-
+            // Socket to talk to the push/pull queue
+            ZMQ.Socket pushSocket = initSocket(context, SocketType.PUSH, "*", PUSH_PORT_QUEUE, true);
 
             // This is printed once the Load Manager is running
             logger.info("Load Manager running on port " + LOAD_MANAGER_REPLY_PORT);
-            logger.info("Push/Pull running on port " + PUSH_PORT);
+            logger.info("Push/Pull QUEUE running on port " + PUSH_PORT_QUEUE);
 
             while (!Thread.currentThread().isInterrupted()) {
                 logger.info("Waiting for request from client...");
@@ -46,7 +45,7 @@ public class LoadManager {
                 if (msg.getFirst().toString().equals("Borrow")) {
 
                 } else {
-                    forwardToPublisher(pushSocket, msg);
+                    forwardToQueue(pushSocket, msg);
                     responseClient(replySocket);
                 }
 
@@ -87,6 +86,11 @@ public class LoadManager {
     public static void forwardToPublisher(ZMQ.Socket socket, ZMsg msg) {
         logger.info("Sending request to Publisher...");
         // Send message to Publisher
+        msg.send(socket);
+    }
+
+    public static void forwardToQueue(ZMQ.Socket socket, ZMsg msg) {
+        logger.info("Sending message to the queue...");
         msg.send(socket);
     }
 }
