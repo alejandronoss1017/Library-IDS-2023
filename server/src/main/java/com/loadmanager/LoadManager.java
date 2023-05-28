@@ -34,8 +34,9 @@ public class LoadManager {
             logger.info("Load Manager running on port " + LOAD_MANAGER_REPLY_PORT);
             logger.info("Push/Pull QUEUE running on port " + PUSH_PORT_QUEUE);
 
+            logger.info("Waiting for request from client...");
+
             while (!Thread.currentThread().isInterrupted()) {
-                logger.info("Waiting for request from client...");
 
                 ZMsg msg = new ZMsg();
 
