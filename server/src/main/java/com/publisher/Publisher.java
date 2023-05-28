@@ -43,7 +43,33 @@ public class Publisher {
 
                 logger.info("Message received from server: " + msg);
 
-                // Send message to all subscribers subscribed to the topic
+                // The first frame is the topic
+                String topic = msg.popString();
+
+                // The second frame is the message
+                String message = msg.popString();
+
+                // the third frame is the campus
+                String campus = msg.popString();
+
+                // Check if the topic matches the specific topic you want to send a message to
+                if (isTopicMatch(topic, "Renewal")) {
+                    // Create a new ZMsg to send the message to the subscriber
+                    ZMsg pubMsg = new ZMsg();
+
+                    // Set the topic
+                    pubMsg.addString(topic);
+
+                    // Set the message
+                    pubMsg.addString(message);
+
+                    // Set the campus
+                    pubMsg.addString(campus);
+
+                    // Send the message to the subscriber
+                    pubMsg.send(pubSocket);
+                }
+
             }
 
         } catch (ZMQException e) {
@@ -72,5 +98,12 @@ public class Publisher {
         }
 
         return socket;
+    }
+
+    private static boolean isTopicMatch(String topic, String specificTopic) {
+        // Perform the necessary comparison to check if the topic matches the specific
+        // topic.
+        // You can modify this logic based on your requirements.
+        return topic.equals(specificTopic);
     }
 }
