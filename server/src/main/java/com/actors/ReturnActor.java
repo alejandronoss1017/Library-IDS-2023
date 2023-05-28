@@ -27,7 +27,7 @@ public class ReturnActor {
 
             subscriber.subscribe(TOPIC);
 
-            logger.info("Renewal listening on port " + PUBLISHER_PORT + " ...");
+            logger.info("Return actor listening on port " + PUBLISHER_PORT + " ...");
 
             // Start a thread to do the work of the actor
             Thread returnThread = new Thread(new DoWorkThread(returnWorkQueue));
@@ -37,9 +37,13 @@ public class ReturnActor {
 
                 ZMsg msg = ZMsg.recvMsg(subscriber);
 
-                returnWorkQueue.produce(msg);
+                // Checks if the message is for this actor
+                if (msg.size() > 0 && msg.getFirst().toString().equals(TOPIC)) {
+                    // Add the message to the queue
+                    returnWorkQueue.produce(msg);
 
-                logger.info("Renewal actor received: " + msg.toString());
+                    logger.info("Return actor received: " + msg.toString());
+                }
 
             }
 
