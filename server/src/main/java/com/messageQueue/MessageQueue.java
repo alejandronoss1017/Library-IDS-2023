@@ -31,6 +31,10 @@ public class MessageQueue {
         return queue.poll();
     }
 
+    public synchronized ZMsg getFirst() {
+        return queue.peek();
+    }
+
     public synchronized boolean isEmpty() {
         return queue.isEmpty();
     }
