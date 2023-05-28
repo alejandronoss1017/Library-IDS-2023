@@ -1,5 +1,7 @@
 package com.messageQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -14,6 +16,7 @@ public class SenderThread implements Runnable {
     private static MessageQueue queue;
     private static final String PUSH_FROM_QUEUE_TO_PUB_PORT = Dotenv.load().get("PUSH_FROM_QUEUE_TO_PUB_PORT");
     private static final String PUSH_FROM_QUEUE_TO_PUB_IP = Dotenv.load().get("PUSH_FROM_QUEUE_TO_PUB_IP");
+    private static final Logger logger = LoggerFactory.getLogger(SenderThread.class);
 
     public SenderThread(MessageQueue queue) {
         SenderThread.queue = queue;
@@ -26,13 +29,13 @@ public class SenderThread implements Runnable {
             ZMQ.Socket pushSocket = SocketUtil.connectSocket(pushContext, SocketType.PUSH, PUSH_FROM_QUEUE_TO_PUB_IP,
                     PUSH_FROM_QUEUE_TO_PUB_PORT, true);
 
-            System.out.println("Sender connected to port " + PUSH_FROM_QUEUE_TO_PUB_PORT);
+            logger.info("Sender connected to port " + PUSH_FROM_QUEUE_TO_PUB_PORT);
 
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     ZMsg msg = queue.consume();
 
-                    System.out.println("Message sended from the queue: " + msg.toString());
+                    logger.info("Message sended from the queue: " + msg.toString());
                     MessageUtil.sendMessage(pushSocket, msg);
 
                     msg.clear();
@@ -42,7 +45,7 @@ public class SenderThread implements Runnable {
             }
 
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            logger.error("Error: " + e.getMessage());
         }
 
         throw new UnsupportedOperationException("Unimplemented method 'run'");
