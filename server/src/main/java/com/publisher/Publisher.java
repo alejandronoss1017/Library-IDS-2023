@@ -9,6 +9,7 @@ import org.zeromq.ZMQException;
 import org.zeromq.ZMsg;
 
 import com.messageQueue.MessageQueue;
+import com.utils.SocketUtil;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -28,11 +29,11 @@ public class Publisher {
 
             // This must be a connect, not a bind, because the push is the one that
             // binds to the port and the pull connects to it.
-            ZMQ.Socket pullSocket = initSocket(context, SocketType.PULL, 
+            ZMQ.Socket pullSocket = SocketUtil.connectSocket(context, SocketType.PULL,
                     PULL_FROM_PUB_TO_QUEUE_IP, PULL_FROM_PUB_TO_QUEUE_PORT, false);
 
             // Socket to send messages to subscribers
-            ZMQ.Socket pubSocket = initSocket(context, SocketType.PUB, "*", PUB_PORT, true);
+            ZMQ.Socket pubSocket = SocketUtil.connectSocket(context, SocketType.PUB, "*", PUB_PORT, true);
 
             logger.info("Push/Pull Queue running on port " + PULL_FROM_PUB_TO_QUEUE_PORT);
             logger.info("Publisher/Subscriber running on port " + PUB_PORT);
@@ -70,23 +71,5 @@ public class Publisher {
             logger.error("Error: " + e.getMessage());
         }
 
-    }
-
-    public static ZMQ.Socket initSocket(ZContext context, SocketType type, String ip, String port, boolean bind) {
-        ZMQ.Socket socket = null;
-
-        try {
-            socket = context.createSocket(type);
-
-            if (bind) {
-                socket.bind("tcp://" + ip + ":" + port);
-            } else {
-                socket.connect("tcp://" + ip + ":" + port);
-            }
-        } catch (Exception e) {
-            logger.error("Error: " + e.getMessage());
-        }
-
-        return socket;
     }
 }

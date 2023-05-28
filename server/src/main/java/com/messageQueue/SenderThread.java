@@ -5,6 +5,8 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.utils.SocketUtil;
+
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class SenderThread implements Runnable {
@@ -20,9 +22,8 @@ public class SenderThread implements Runnable {
     public void run() {
         try (ZContext pushContext = new ZContext()) {
 
-            ZMQ.Socket pushSocket = pushContext.createSocket(SocketType.PUSH);
-
-            pushSocket.bind("tcp://" + PUSH_FROM_QUEUE_TO_PUB_IP + ":" + PUSH_FROM_QUEUE_TO_PUB_PORT);
+            ZMQ.Socket pushSocket = SocketUtil.connectSocket(pushContext, SocketType.PUSH, PUSH_FROM_QUEUE_TO_PUB_IP,
+                    PUSH_FROM_QUEUE_TO_PUB_PORT, true);
 
             System.out.println("Sender connected to port " + PUSH_FROM_QUEUE_TO_PUB_PORT);
 

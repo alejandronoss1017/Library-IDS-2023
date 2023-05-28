@@ -5,6 +5,8 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.utils.SocketUtil;
+
 import io.github.cdimascio.dotenv.Dotenv;
 
 import org.slf4j.Logger;
@@ -21,10 +23,11 @@ public class LoadManager {
         try (ZContext context = new ZContext()) {
 
             // Socket to talk to clients
-            ZMQ.Socket replySocket = initSocket(context, SocketType.REP, "*", LOAD_MANAGER_REPLY_PORT, true);
+            ZMQ.Socket replySocket = SocketUtil.connectSocket(context, SocketType.REP, "*", LOAD_MANAGER_REPLY_PORT,
+                    true);
 
             // Socket to talk to the push/pull queue
-            ZMQ.Socket pushSocket = initSocket(context, SocketType.PUSH, "*", PUSH_PORT_QUEUE, true);
+            ZMQ.Socket pushSocket = SocketUtil.connectSocket(context, SocketType.PUSH, "*", PUSH_PORT_QUEUE, true);
 
             // This is printed once the Load Manager is running
             logger.info("Load Manager running on port " + LOAD_MANAGER_REPLY_PORT);
@@ -53,24 +56,6 @@ public class LoadManager {
         } catch (Exception e) {
             logger.error("Error: " + e.getMessage());
         }
-    }
-
-    public static ZMQ.Socket initSocket(ZContext context, SocketType type, String ip, String port, boolean bind) {
-        ZMQ.Socket socket = null;
-
-        try {
-            socket = context.createSocket(type);
-
-            if (bind) {
-                socket.bind("tcp://" + ip + ":" + port);
-            } else {
-                socket.connect("tcp://" + ip + ":" + port);
-            }
-        } catch (Exception e) {
-            logger.error("Error: " + e.getMessage());
-        }
-
-        return socket;
     }
 
     public static void responseClient(ZMQ.Socket socket) {

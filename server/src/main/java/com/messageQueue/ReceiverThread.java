@@ -5,6 +5,8 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.utils.SocketUtil;
+
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class ReceiverThread implements Runnable {
@@ -21,9 +23,9 @@ public class ReceiverThread implements Runnable {
 
         try (ZContext pullContext = new ZContext()) {
 
-            ZMQ.Socket pullSocket = pullContext.createSocket(SocketType.PULL);
+            ZMQ.Socket pullSocket = SocketUtil.connectSocket(pullContext, SocketType.PULL, PULL_FROM_LOADMANAGER_IP,
+                    PULL_FROM_LOADMANAGER_PORT, false);
 
-            pullSocket.connect("tcp://" + PULL_FROM_LOADMANAGER_IP + ":" + PULL_FROM_LOADMANAGER_PORT);
             System.out.println("Receiver connected to port " + PULL_FROM_LOADMANAGER_PORT);
 
             while (!Thread.currentThread().isInterrupted()) {
