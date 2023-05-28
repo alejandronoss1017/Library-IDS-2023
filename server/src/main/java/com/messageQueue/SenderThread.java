@@ -5,6 +5,7 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.utils.MessageUtil;
 import com.utils.SocketUtil;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -32,7 +33,7 @@ public class SenderThread implements Runnable {
                     ZMsg msg = queue.consume();
 
                     System.out.println("Message sended from the queue: " + msg.toString());
-                    msg.send(pushSocket);
+                    MessageUtil.sendMessage(pushSocket, msg);
 
                     msg.clear();
                 } catch (InterruptedException e) {

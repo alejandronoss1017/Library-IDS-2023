@@ -5,6 +5,7 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.utils.MessageUtil;
 import com.utils.SocketUtil;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -48,34 +49,19 @@ public class LoadManager {
                 if (msg.getFirst().toString().equals("Borrow")) {
 
                 } else {
-                    forwardToQueue(pushSocket, msg);
-                    responseClient(replySocket);
+                    // Send a reply back to the client
+                    logger.info("Sending reply back to client...");
+                    MessageUtil.sendMessage(replySocket, "OK");
+
+                    // Send the message to the push/pull queue
+                    logger.info("Sending message to the queue...");
+                    MessageUtil.sendMessage(pushSocket, msg);
+
                 }
 
             }
         } catch (Exception e) {
             logger.error("Error: " + e.getMessage());
         }
-    }
-
-    public static void responseClient(ZMQ.Socket socket) {
-        ZMsg msg = new ZMsg();
-        msg.add("OK");
-
-        logger.info("Sending reply back to client: " + msg.toString());
-
-        msg.send(socket);
-        msg.clear();
-    }
-
-    public static void forwardToPublisher(ZMQ.Socket socket, ZMsg msg) {
-        logger.info("Sending request to Publisher...");
-        // Send message to Publisher
-        msg.send(socket);
-    }
-
-    public static void forwardToQueue(ZMQ.Socket socket, ZMsg msg) {
-        logger.info("Sending message to the queue...");
-        msg.send(socket);
     }
 }
