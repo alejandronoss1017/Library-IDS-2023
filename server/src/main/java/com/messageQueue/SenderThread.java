@@ -14,8 +14,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class SenderThread implements Runnable {
     private static MessageQueue queue;
-    private static final String PUSH_FROM_QUEUE_TO_PUB_PORT = Dotenv.load().get("PUSH_FROM_QUEUE_TO_PUB_PORT");
-    private static final String PUSH_FROM_QUEUE_TO_PUB_IP = Dotenv.load().get("PUSH_FROM_QUEUE_TO_PUB_IP");
+
+    private static final String REP_FROM_QUEUE_TO_PUB_PORT = Dotenv.load().get("REP_FROM_QUEUE_TO_PUB_PORT");
+
+    private static final String REP_FROM_QUEUE_TO_PUB_IP = Dotenv.load().get("REP_FROM_QUEUE_TO_PUB_IP");
+
     private static final Logger logger = LoggerFactory.getLogger(SenderThread.class);
 
     public SenderThread(MessageQueue queue) {
@@ -24,21 +27,30 @@ public class SenderThread implements Runnable {
 
     @Override
     public void run() {
-        try (ZContext pushContext = new ZContext()) {
+        try (ZContext replyContext = new ZContext()) {
 
-            ZMQ.Socket pushSocket = SocketUtil.connectSocket(pushContext, SocketType.PUSH, PUSH_FROM_QUEUE_TO_PUB_IP,
-                    PUSH_FROM_QUEUE_TO_PUB_PORT, true);
+            ZMQ.Socket replySocket = SocketUtil.connectSocket(replyContext, SocketType.REP,
+                    REP_FROM_QUEUE_TO_PUB_IP, REP_FROM_QUEUE_TO_PUB_PORT, true);
 
-            logger.info("Sender connected to port " + PUSH_FROM_QUEUE_TO_PUB_PORT);
+            logger.info("Queue reply binding to port: " + REP_FROM_QUEUE_TO_PUB_PORT);
 
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    ZMsg msg = queue.consume();
 
-                    logger.info("Message sended from the queue: " + msg.toString());
-                    MessageUtil.sendMessage(pushSocket, msg);
+                    ZMsg msg = new ZMsg();
 
+                    // Wait for next request from the Publisher
+                    msg = ZMsg.recvMsg(replySocket);
+
+                    logger.info("Request received from Publisher: " + msg.toString());
                     msg.clear();
+
+                    // Send reply back to Publisher when the queue is not empty
+                    // otherwise wait for a message to be added to the queue.
+                    msg = queue.consume();
+                    logger.info("Message sended from the queue: " + msg.toString());
+                    MessageUtil.sendMessage(replySocket, msg);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
