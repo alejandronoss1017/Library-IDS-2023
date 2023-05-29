@@ -58,4 +58,9 @@ public class Book implements Serializable {
         this.amount = amount;
     }
 
+    @Override
+    public String toString() {
+        return "Book [isbn=" + isbn + ", name=" + name + "]";
+    }
+
 }

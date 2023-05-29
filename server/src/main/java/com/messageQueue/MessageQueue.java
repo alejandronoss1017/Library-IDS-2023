@@ -1,22 +1,22 @@
-package com.server.logic;
+package com.messageQueue;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 import org.zeromq.ZMsg;
 
-public class Buffer {
-    private static Buffer instance = null;
+public class MessageQueue {
+    private static MessageQueue instance = null;
     private final Queue<ZMsg> queue = new LinkedList<ZMsg>();
 
-    public static Buffer getInstance(){
+    public static MessageQueue getInstance() {
         if (instance == null) {
-            instance = new Buffer();
+            instance = new MessageQueue();
         }
         return instance;
     }
 
-    private Buffer() {
+    private MessageQueue() {
     }
 
     public synchronized void produce(ZMsg msg) {
@@ -30,4 +30,17 @@ public class Buffer {
         }
         return queue.poll();
     }
+
+    public synchronized ZMsg getFirst() {
+        return queue.peek();
+    }
+
+    public synchronized boolean isEmpty() {
+        return queue.isEmpty();
+    }
+
+    public synchronized int size() {
+        return queue.size();
+    }
+
 }

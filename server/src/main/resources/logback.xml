@@ -1,12 +1,13 @@
 <configuration>
 
-  <!-- If wanna log the logback status at the starup comment line below -->
+    <!-- If wanna log the logback status at the starup comment line below -->
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 
     <!-- Define el appender para la consola -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level){INFO=green, WARN=yellow, ERROR=red} %cyan(%logger{15}) - %m%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level){INFO=green, WARN=yellow,
+                ERROR=red} %cyan(%logger{15}) - %m%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
@@ -31,6 +32,13 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </logger>
+
+    <!-- 
+         logback is already handling your logging output so 
+         you need is telling logback to leave out the 
+         talkative information coming from the org.jboss package
+     -->
+    <logger name="org.jboss" level="off" />
 
     <!-- Define el nivel de log global para la aplicación -->
     <root level="debug">
