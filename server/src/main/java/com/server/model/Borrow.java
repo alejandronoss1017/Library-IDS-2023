@@ -41,6 +41,14 @@ public class Borrow implements Serializable {
         this.returnDate = returnDate;
     }
 
+    public Borrow(Book book) {
+        this.book = book;
+        this.initialDate = LocalDate.now();
+        this.finalDate = LocalDate.now().plusDays(7);
+        this.returned = false;
+        this.returnDate = null;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -82,11 +90,11 @@ public class Borrow implements Serializable {
     }
 
     public Book getBook() {
-    return book;
+        return book;
     }
 
     public void setBook(Book book) {
-    this.book = book;
+        this.book = book;
     }
 
 }
