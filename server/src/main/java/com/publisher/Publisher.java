@@ -14,8 +14,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class Publisher {
     private static final String PULL_FROM_PUB_TO_QUEUE_PORT = Dotenv.load().get("PULL_FROM_PUB_TO_QUEUE_PORT");
+
     private static final String PULL_FROM_PUB_TO_QUEUE_IP = Dotenv.load().get("PULL_FROM_PUB_TO_QUEUE_IP");
+
     private static final String PUB_PORT = Dotenv.load().get("PUB_SUB_PORT");
+    
     private static final Logger logger = LoggerFactory.getLogger(Publisher.class);
 
     public static void main(String[] args) {
