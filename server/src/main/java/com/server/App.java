@@ -16,6 +16,18 @@ public class App {
     private static Process publisherProcess = ProcessLogic.startProcess("java", "-jar",
             Dotenv.load().get("PUBLISHER_JAR"));
 
+    private static Process queueProcess = ProcessLogic.startProcess("java", "-jar",
+            Dotenv.load().get("QUEUE_JAR"));
+
+    private static Process borrowActorProcess = ProcessLogic.startProcess("java", "-jar",
+            Dotenv.load().get("BORROW_ACTOR_JAR"));
+
+    private static Process renewalActorProcess = ProcessLogic.startProcess("java", "-jar",
+            Dotenv.load().get("RENEWAL_ACTOR_JAR"));
+
+    private static Process returnActorProcess = ProcessLogic.startProcess("java", "-jar",
+            Dotenv.load().get("RETURN_ACTOR_JAR"));
+
     public static void main(String[] args) throws Exception {
 
         // Add a shutdown hook to destroy the main process when the server is shutdown
@@ -78,6 +90,81 @@ public class App {
                 }
             }
 
+            if (!queueProcess.isAlive()) {
+                logger.error("Queue process is not running");
+
+                ProcessLogic.stopProcess(queueProcess);
+
+                logger.info("Attempting to restart Queue process...");
+                queueProcess = ProcessLogic.startProcess("java", "-jar", Dotenv.load().get("QUEUE_JAR"));
+                ProcessLogic.addShutdownHook(queueProcess);
+
+                if (ProcessLogic.waitForProcess(queueProcess)) {
+                    logger.info("Queue restarted successfully");
+                    logger.info("Queue PID: " + queueProcess.pid());
+                } else {
+                    logger.error("Queue failed to restart");
+                    return;
+                }
+            }
+
+            if (!borrowActorProcess.isAlive()) {
+                logger.error("Borrow Actor process is not running");
+
+                ProcessLogic.stopProcess(borrowActorProcess);
+
+                logger.info("Attempting to restart Borrow Actor process...");
+                borrowActorProcess = ProcessLogic.startProcess();
+                ProcessLogic.addShutdownHook(borrowActorProcess);
+
+                if (ProcessLogic.waitForProcess(borrowActorProcess)) {
+                    logger.info("Borrow Actor restarted successfully");
+                    logger.info("Borrow Actor PID: " + borrowActorProcess.pid());
+                } else {
+                    logger.error("Borrow Actor failed to restart");
+                    return;
+                }
+
+            }
+
+            if (!renewalActorProcess.isAlive()) {
+                logger.error("Renewal Actor process is not running");
+
+                ProcessLogic.stopProcess(renewalActorProcess);
+
+                logger.info("Attempting to restart Renewal Actor process...");
+                renewalActorProcess = ProcessLogic.startProcess();
+                ProcessLogic.addShutdownHook(renewalActorProcess);
+
+                if (ProcessLogic.waitForProcess(renewalActorProcess)) {
+                    logger.info("Renewal Actor restarted successfully");
+                    logger.info("Renewal Actor PID: " + renewalActorProcess.pid());
+                } else {
+                    logger.error("Renewal Actor failed to restart");
+                    return;
+                }
+
+            }
+
+            if (!returnActorProcess.isAlive()) {
+                logger.error("Return Actor process is not running");
+
+                ProcessLogic.stopProcess(returnActorProcess);
+
+                logger.info("Attempting to restart Return Actor process...");
+                returnActorProcess = ProcessLogic.startProcess();
+                ProcessLogic.addShutdownHook(returnActorProcess);
+
+                if (ProcessLogic.waitForProcess(returnActorProcess)) {
+                    logger.info("Return Actor restarted successfully");
+                    logger.info("Return Actor PID: " + returnActorProcess.pid());
+                } else {
+                    logger.error("Return Actor failed to restart");
+                    return;
+                }
+
+            }
+
             Thread.sleep(1000);
         }
 
@@ -86,19 +173,32 @@ public class App {
     public static void setShutdownHooks() {
         ProcessLogic.addShutdownHook(loadManagerProcess);
         ProcessLogic.addShutdownHook(publisherProcess);
+        ProcessLogic.addShutdownHook(queueProcess);
+        ProcessLogic.addShutdownHook(borrowActorProcess);
+        ProcessLogic.addShutdownHook(renewalActorProcess);
+        ProcessLogic.addShutdownHook(returnActorProcess);
     }
 
     public static boolean waitForProcesses() {
 
         boolean pLoadManager = ProcessLogic.waitForProcess(loadManagerProcess) && loadManagerProcess != null;
         boolean pPub = ProcessLogic.waitForProcess(publisherProcess) && publisherProcess != null;
+        boolean pQueue = ProcessLogic.waitForProcess(queueProcess) && queueProcess != null;
+        boolean pBorrow = ProcessLogic.waitForProcess(borrowActorProcess) && borrowActorProcess != null;
+        boolean pRenewal = ProcessLogic.waitForProcess(renewalActorProcess) && renewalActorProcess != null;
+        boolean pReturn = ProcessLogic.waitForProcess(returnActorProcess) && returnActorProcess != null;
 
-        return pPub && pLoadManager;
+        return pPub && pLoadManager && pQueue && pBorrow && pRenewal && pReturn;
     }
 
     public static void showProcessesInfo() {
         logger.info("Load Manager PID: " + loadManagerProcess.pid());
         logger.info("Publisher PID: " + publisherProcess.pid());
+        logger.info("Queue PID: " + queueProcess.pid());
+        logger.info("Borrow Actor PID: " + borrowActorProcess.pid());
+        logger.info("Renewal Actor PID: " + renewalActorProcess.pid());
+        logger.info("Return Actor PID: " + returnActorProcess.pid());
+
     }
 
 }

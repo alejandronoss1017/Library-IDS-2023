@@ -13,35 +13,43 @@ import com.utils.SocketUtil;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class Publisher {
-    private static final String PULL_FROM_PUB_TO_QUEUE_PORT = Dotenv.load().get("PULL_FROM_PUB_TO_QUEUE_PORT");
-    private static final String PULL_FROM_PUB_TO_QUEUE_IP = Dotenv.load().get("PULL_FROM_PUB_TO_QUEUE_IP");
+    private static final String REQ_FROM_PUB_TO_QUEUE_PORT = Dotenv.load().get("REQ_FROM_PUB_TO_QUEUE_PORT");
+
+    private static final String REQ_FROM_PUB_TO_QUEUE_IP = Dotenv.load().get("REQ_FROM_PUB_TO_QUEUE_IP");
+
     private static final String PUB_PORT = Dotenv.load().get("PUB_SUB_PORT");
+
     private static final Logger logger = LoggerFactory.getLogger(Publisher.class);
 
     public static void main(String[] args) {
 
         try (ZContext context = new ZContext()) {
 
-            // Socket to get messages from server
-
-            // This must be a connect, not a bind, because the push is the one that
-            // binds to the port and the pull connects to it.
-            ZMQ.Socket pullSocket = SocketUtil.connectSocket(context, SocketType.PULL,
-                    PULL_FROM_PUB_TO_QUEUE_IP, PULL_FROM_PUB_TO_QUEUE_PORT, false);
+            // Socket to request a message from the queue
+            ZMQ.Socket requestSocket = SocketUtil.connectSocket(context, SocketType.REQ,
+                    REQ_FROM_PUB_TO_QUEUE_IP, REQ_FROM_PUB_TO_QUEUE_PORT, false);
 
             // Socket to send messages to subscribers
             ZMQ.Socket pubSocket = SocketUtil.connectSocket(context, SocketType.PUB, "*", PUB_PORT, true);
 
-            logger.info("Push/Pull Queue running on port " + PULL_FROM_PUB_TO_QUEUE_PORT);
+            logger.info("Req/Rep Queue running on port:  " + REQ_FROM_PUB_TO_QUEUE_PORT);
             logger.info("Publisher/Subscriber running on port " + PUB_PORT);
 
             logger.info("Waiting for messages...");
 
             while (!Thread.currentThread().isInterrupted()) {
 
-                ZMsg msg = ZMsg.recvMsg(pullSocket);
+                ZMsg msg = new ZMsg();
 
-                logger.info("Message received from server: " + msg);
+                msg.add("Send me a message");
+
+                msg.send(requestSocket);
+                msg.clear();
+
+                // If the queue is empty, this will block until a message is received
+                msg = ZMsg.recvMsg(requestSocket);
+
+                logger.info("Message received from the queue: " + msg);
 
                 // Send the message to subscribers of the topic
                 msg.send(pubSocket);
