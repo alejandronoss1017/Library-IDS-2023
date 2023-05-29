@@ -16,7 +16,15 @@ import org.slf4j.LoggerFactory;
 public class LoadManager {
 
     private static final String LOAD_MANAGER_REPLY_PORT = Dotenv.load().get("LOAD_MANAGER_REPLY_PORT");
+
+    private static final String LOAD_MANAGER_TO_ACTOR_REQUEST_PORT = Dotenv.load()
+            .get("LOAD_MANAGER_TO_ACTOR_REQUEST_PORT");
+
+    private static final String LOAD_MANAGER_TO_ACTOR_REQUEST_IP = Dotenv.load()
+            .get("LOAD_MANAGER_TO_ACTOR_REQUEST_IP");
+
     private static final String PUSH_PORT_QUEUE = Dotenv.load().get("PUSH_FROM_LOAD_MANAGER_TO_QUEUE_PORT");
+
     private static final Logger logger = LoggerFactory.getLogger(LoadManager.class);
 
     public static void main(String[] args) {
@@ -29,6 +37,11 @@ public class LoadManager {
 
             // Socket to talk to the push/pull queue
             ZMQ.Socket pushSocket = SocketUtil.connectSocket(context, SocketType.PUSH, "*", PUSH_PORT_QUEUE, true);
+
+            // Socket to talk to the Borrow Actor
+            ZMQ.Socket requestSocket = SocketUtil.connectSocket(context, SocketType.REQ,
+                    LOAD_MANAGER_TO_ACTOR_REQUEST_IP,
+                    LOAD_MANAGER_TO_ACTOR_REQUEST_PORT, false);
 
             // This is printed once the Load Manager is running
             logger.info("Load Manager running on port " + LOAD_MANAGER_REPLY_PORT);
@@ -48,6 +61,17 @@ public class LoadManager {
                 // If the request is a Borrow request, this will continue as a
                 // request-reply pattern
                 if (msg.getFirst().toString().equals("Borrow")) {
+
+                    // Send the request to the Borrow Actor
+                    logger.info("Sending request to the Borrow Actor...");
+                    MessageUtil.sendMessage(requestSocket, msg);
+
+                    // Wait for the reply from the Borrow Actor
+                    msg = ZMsg.recvMsg(requestSocket);
+
+                    // Send the reply back to the client
+                    logger.info("Sending reply back to client...");
+                    MessageUtil.sendMessage(replySocket, msg);
 
                 } else {
                     // Send a reply back to the client
