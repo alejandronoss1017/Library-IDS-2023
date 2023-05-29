@@ -3,6 +3,7 @@ package com.loadManager;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
 import org.zeromq.ZMsg;
 
 import com.utils.MessageUtil;
@@ -25,6 +26,8 @@ public class LoadManager {
 
     private static final String PUSH_PORT_QUEUE = Dotenv.load().get("PUSH_FROM_LOAD_MANAGER_TO_QUEUE_PORT");
 
+    private static final String TIMEOUT = Dotenv.load().get("TIMEOUT");
+
     private static final Logger logger = LoggerFactory.getLogger(LoadManager.class);
 
     public static void main(String[] args) {
@@ -42,6 +45,9 @@ public class LoadManager {
             ZMQ.Socket requestSocket = SocketUtil.connectSocket(context, SocketType.REQ,
                     LOAD_MANAGER_TO_ACTOR_REQUEST_IP,
                     LOAD_MANAGER_TO_ACTOR_REQUEST_PORT, false);
+
+            // Set the timeout for the request socket to borrow actor
+            requestSocket.setReceiveTimeOut(Integer.parseInt(TIMEOUT));
 
             // This is printed once the Load Manager is running
             logger.info("Load Manager running on port " + LOAD_MANAGER_REPLY_PORT);
@@ -66,12 +72,41 @@ public class LoadManager {
                     logger.info("Sending request to the Borrow Actor...");
                     MessageUtil.sendMessage(requestSocket, msg);
 
-                    // Wait for the reply from the Borrow Actor
-                    msg = ZMsg.recvMsg(requestSocket);
+                    try {
+                        // Wait for the reply from the Borrow Actor
+                        msg = ZMsg.recvMsg(requestSocket);
 
-                    // Send the reply back to the client
-                    logger.info("Sending reply back to client...");
-                    MessageUtil.sendMessage(replySocket, msg);
+                        if (msg != null) {
+
+                            // Send the reply back to the client
+                            logger.info("Sending reply back to client...");
+
+                            MessageUtil.sendMessage(replySocket, msg);
+                        } else {
+                            logger.error("Cannot get a response in " + TIMEOUT + " ms from the Borrow Actor");
+                            MessageUtil.sendMessage(replySocket, "Reach timeout, try again later");
+
+                        }
+
+                    } catch (ZMQException e) {
+
+                        if (e.getErrorCode() == ZMQ.Error.ETERM.getCode()) {
+
+                            // The connection has been terminated, try to change the connection
+                            logger.error("Cannot get a response in " + TIMEOUT + " ms");
+
+                        } else if (e.getErrorCode() == ZMQ.Error.EFSM.getCode()) {
+
+                            // The connection is not established, try to change the connection
+                            logger.error("Cannot get a response in " + TIMEOUT + " ms");
+
+                        } else {
+
+                            // Another type of ZMQ.Error, print the message and exit the loop
+                            System.out.println("Error: " + e.getMessage());
+                            break;
+                        }
+                    }
 
                 } else {
                     // Send a reply back to the client
