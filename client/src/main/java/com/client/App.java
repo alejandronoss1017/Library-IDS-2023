@@ -81,7 +81,7 @@ public class App {
         }
 
         // Check if at least the file flag is present
-        if (!hasFile) {
+        if (!hasFile && !hasService && !hasIsbn && !hasCampus) {
             System.out.println("Missing the required '-f' flag. Please provide a file name.");
             return;
         }
