@@ -15,8 +15,8 @@
   - [Master-Slave configuration](#master-slave-configuration)
   - [Slave-Master configuration](#slave-master-configuration)
 
-- [Client](./server/README.md)
-- [Server](./client/README.md)
+- [Client](./client/README.md)
+- [Server](./server/README.md)
 - [Authors](#✏️-authors)
 
 # 🗞️ Overall
