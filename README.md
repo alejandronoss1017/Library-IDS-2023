@@ -2,22 +2,22 @@
 
 ## Index
 
-- [Overall](./README.md#overall)
-- [Tech stack](./README.md#tech-stack)
-- [Environment set-up](./README.md#environment-set-up)
+- [Overall](#🗞️-overall)
+- [Tech stack](#📶-tech-stack)
+- [Environment set-up](#💻-environment-set-up)
 
-  - [Java JDK](./README.md#java-jdk)
-  - [Maven](./README.md#maven)
-  - [MySQL](./README.md#mysql)
+  - [Java JDK](#java-jdk)
+  - [Maven](#maven)
+  - [MySQL](#mysql)
 
-- [Replication configuration](./README.md#replication-configuration)
+- [Replication configuration](#🔄-replication-configuration)
 
-  - [Master-Slave configuration](./README.md#master-slave-configuration)
-  - [Slave-Master configuration](./README.md#slave-master-configuration)
+  - [Master-Slave configuration](#master-slave-configuration)
+  - [Slave-Master configuration](#slave-master-configuration)
 
 - [Client](./server/README.md)
 - [Server](./client/README.md)
-- [Authors](./README.md#authors)
+- [Authors](#✏️-authors)
 
 # 🗞️ Overall
 
