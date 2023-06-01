@@ -72,18 +72,35 @@ To run this project, you will need to add the following environment variables to
 
 > The location of the .env file should be the root of the server folder.
 
+![.envPosition](images/envPosition.png)
+
+
 ## 🏗️ Compilation
 
-Once the repository is cloned, should get into de client folder
+Once the repository is cloned, should get into de server folder
 
 **Bash**
 
 ```bash
-  cd Library-IDS-2023/client
+  cd Library-IDS-2023/server
 ```
 
 **cmd**
 
 ```bash
-  dir Library-IDS-2023/client
+  dir Library-IDS-2023/server
 ```
+
+Since several jar files with their dependencies are required, it is recommended to use our IDE for the compilation of each process required by the server.
+
+![javaProjects](images/javaProjects.png)
+
+![determineMainClass](images/determineMainClass.png)
+
+Compile every main class in the server folder, once all are compiled and exported to .jar files only run App.jar/Server.jar 
+
+```bash
+  java -jar ./server.jar
+```
+
+The command will execute the other .jar files.
