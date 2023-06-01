@@ -6,8 +6,6 @@ The objective of the server is to apply several patterns of communication in dis
 
 Finally it applies a data base replication (bidirectional), the data base used in this project is [MySQL](https://www.mysql.com/).
 
-
-
 ![Schema of the server](images/Schema-Library-IDS-2023.png)
 
 ## 📚 Dependencies
@@ -26,18 +24,66 @@ Finally it applies a data base replication (bidirectional), the data base used i
 
 To run this project, you will need to add the following environment variables to your .env file
 
-`LOAD_MANAGER_REPLY_PORT` Number of the port where the load manager will binds to the client.
+`LOAD_MANAGER_JAR` Path to the loadManager .jar file.
+`PUBLISHER_JAR` Path to the loadManager .jar file.
+`QUEUE_JAR` Path to the queue .jar file.
+`BORROW_ACTOR_JAR` Path to the borrowActor .jar file.
+`RENEWAL_ACTOR_JAR` Path to the renwalActor .jar file.
+`RETURN_ACTOR_JAR` Path to the returnActor .jar file.
 
-`PUSH_PULL_PORT` Number of the port of the communication between the load manager and the publisher.
+`LOAD_MANAGER_TO_ACTOR_REQUEST_PORT` Comunication port between the load manager and the borrow actor.
 
-`PULL_IP` IP address to connect to consume the pushes.
+`LOAD_MANAGER_TO_ACTOR_REQUEST_IP` IP to the load manager make the request to the borrow actor.
 
-`PUB_SUB_PORT` Number of the port of where the publisher will binds and subscribers connect.
+`ACTOR_TO_LOAD_MANAGER_REPLY_PORT` Comunication port between the load manager and the borrow actor.
 
-`TOPICS` Topics that the publisher will publish, separate with a ',' different topics.
+`ACTOR_TO_LOAD_MANAGER_REPLY_IP` IP to the actor made the response to the load manager.
+
+`LOAD_MANAGER_REPLY_PORT` Comunication port between the load manager and the borrow actor.
+
+`PUSH_FROM_LOAD_MANAGER_TO_QUEUE_PORT` Comunication port between the load manager and the message queue, the load manager will push messages to the message queue.
+
+`PUSH_FROM_LOAD_MANAGER_TO_QUEUE_IP` IP to message queue.
+
+`PULL_FROM_LOAD_MANAGER_TO_QUEUE_PORT` Comunication port between the load manager and the borrow actor.
+
+`PULL_FROM_LOAD_MANAGER_TO_QUEUE_IP` IP to the load manager.
+
+`REP_FROM_QUEUE_TO_PUB_PORT` Comunication port between the message queue to the publisher.
+
+`REP_FROM_QUEUE_TO_PUB_IP` IP to message queue.
+
+`REQ_FROM_PUB_TO_QUEUE_PORT` Comunication port between the queue and the publisher.
+
+`REQ_FROM_PUB_TO_QUEUE_IP` IP to make the comunication between the pub and queue.
+
+`PUB_SUB_PORT` Comunication port between the publisher and the subscribers.
+
+`PUBLISHER_IP` IP from the publisher.
+
+`RETURN_TOPIC` Name of the return topic.
+`RENEWAL_TOPIC` Name of the renewal topic.
+`BORROW_TOPIC` Name of the borrow topic.
 
 `MAX_ATTEMPTS` Number of attempts to try to restart a service/process.
-
 `DELAY` Time to wait for check if all services are running.
 
->The location of the .env file should be the root of the server folder.
+`TIMEOUT` Time to wait for a response to the server, this value is in milliseconds.
+
+> The location of the .env file should be the root of the server folder.
+
+## 🏗️ Compilation
+
+Once the repository is cloned, should get into de client folder
+
+**Bash**
+
+```bash
+  cd Library-IDS-2023/client
+```
+
+**cmd**
+
+```bash
+  dir Library-IDS-2023/client
+```
